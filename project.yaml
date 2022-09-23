@@ -17,6 +17,7 @@ schema:
 
 network:
   endpoint: "https://avalanche.api.onfinality.io/public"
+  # endpoint:  https://api.avax.network
   # endpoint:  https://api.avax-test.network
   chainId: "mainnet"
   subnet: "C"
@@ -24,35 +25,19 @@ network:
 
 dataSources:
   - kind: avalanche/Runtime
-    startBlock: 1
+    startBlock: 13325661
     options:
       # Must be a key of assets
-      abi: erc20
-      ## Pangolin token https://snowtrace.io/token/0x60781c2586d68229fde47564546784ab3faca982
-      address: "0x60781C2586D68229fde47564546784ab3fACA982"
+      abi: BetaSimpleFlatLostWorld
+      address: "0x848697c66a7161ed9c4b9be1f59b83fd11524bbd"
     assets:
-      erc20:
-        file: "./node_modules/@pangolindex/exchange-contracts/artifacts/contracts/pangolin-core/interfaces/IPangolinERC20.sol/IPangolinERC20.json"
+      BetaSimpleFlatLostWorld:
+        file: "./abis/BetaSimpleFlatLostWorld.json"
     mapping:
       file: "./dist/index.js"
       handlers:
-        # - handler: handleBlock
-        #   kind: avalanche/BlockHandler
-        - handler: handleTransaction
-          kind: avalanche/TransactionHandler
-          filter:
-            ## The function can either be the function fragment or signature
-            # function: '0x095ea7b3'
-            # function: '0x7ff36ab500000000000000000000000000000000000000000000000000000000'
-            function: approve(address spender, uint256 rawAmount)
-            # from: "0x60781C2586D68229fde47564546784ab3fACA982"
-            # to: "0x60781C2586D68229fde47564546784ab3fACA982"
-        # - handler: handleReceipt
-        #   kind: avalanche/TransactionHandler
-        - handler: handleLog
+        - handler: handleTransfer
           kind: avalanche/LogHandler
           filter:
             topics:
-              ## Follows standard log filters https://docs.ethers.io/v5/concepts/events/
-              - Transfer(address indexed from, address indexed to, uint256 amount)
-              # address: "0x60781C2586D68229fde47564546784ab3fACA982"
+              - Transfer(address indexed from, address indexed to, uint256 indexed tokenId)
