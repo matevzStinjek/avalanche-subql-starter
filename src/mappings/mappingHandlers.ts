@@ -1,6 +1,6 @@
 // Copyright 2020-2022 OnFinality Limited authors & contributors
 // SPDX-License-Identifier: Apache-2.0
-import axios from "axios";
+import fetch from "node-fetch";
 
 import {
   AvalancheLog,
@@ -15,8 +15,8 @@ export async function handleTransfer(event: AvalancheLog<TransferEvent['args']>)
   logger.info(JSON.stringify(event.args));
 
   // external http requests
-  const data = await axios.get('https://jsonplaceholder.typicode.com/todos/1')
-    .then(res => res.data);
+  const data = await fetch('https://jsonplaceholder.typicode.com/todos/1')
+    .then(res => res.json());
 
   logger.info(JSON.stringify(data));
 };
