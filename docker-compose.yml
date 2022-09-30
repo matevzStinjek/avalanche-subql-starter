@@ -16,7 +16,7 @@ services:
       retries: 5
 
   subquery-node:
-    image: onfinality/subql-node-avalanche:latest
+    image: onfinality/subql-node-avalanche:v1.9.2
     depends_on:
       "postgres":
         condition: service_healthy
@@ -34,6 +34,7 @@ services:
       - --db-schema=app
       - --log-level=debug
       - --unsafe
+      - --force-clean
     healthcheck:
       test: ["CMD", "curl", "-f", "http://subquery-node:3000/ready"]
       interval: 3s
