@@ -12,11 +12,9 @@ import {
 
 export async function handleTransfer(event: AvalancheLog<TransferEvent['args']>): Promise<void> {
   // event data
-  logger.info(JSON.stringify(event.args));
-
-  // external http requests
-  const data = await fetch('https://jsonplaceholder.typicode.com/todos/1')
-    .then(res => res.json());
-
-  logger.info(JSON.stringify(data));
+  logger.info('log')
+  if (event.args) {
+    delete event.block;
+    logger.info(JSON.stringify(event.args)); 
+  }
 };
