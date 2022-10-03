@@ -27,7 +27,6 @@
     "@subql/common": "latest",
     "@subql/validator": "latest",
     "assert": "^2.0.0",
-    "axios": "^0.27.2",
     "ethers": "^5.7.1",
     "node-fetch": "2.6.6"
   },
