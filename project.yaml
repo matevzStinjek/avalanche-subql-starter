@@ -16,8 +16,8 @@ schema:
   file: "./schema.graphql"
 
 network:
-  endpoint: "https://avalanche.api.onfinality.io/public"
-  # endpoint:  https://api.avax.network
+  # endpoint: "https://avalanche.api.onfinality.io/public"
+  endpoint:  https://api.avax.network
   # endpoint:  https://api.avax-test.network
   chainId: "mainnet"
   subnet: "C"
@@ -25,7 +25,7 @@ network:
 
 dataSources:
   - kind: avalanche/Runtime
-    startBlock: 13325661
+    startBlock: 13325660
     options:
       # Must be a key of assets
       abi: BetaSimpleFlatLostWorld
