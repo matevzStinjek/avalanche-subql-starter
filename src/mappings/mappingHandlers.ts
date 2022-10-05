@@ -1,20 +1,39 @@
-// Copyright 2020-2022 OnFinality Limited authors & contributors
-// SPDX-License-Identifier: Apache-2.0
 import fetch from "node-fetch";
+import { AvalancheTransaction } from "@subql/types-avalanche";
+import { BigNumber } from "ethers";
+import { Account, Transfer } from "../types";
 
-import {
-  AvalancheLog,
-} from "@subql/types-avalanche";
-
-import {
-  TransferEvent,
-} from "../contracts/BetaSimpleFlatLostWorld";
-
-export async function handleTransfer(event: AvalancheLog<TransferEvent['args']>): Promise<void> {
-  // event data
-  logger.info('log')
-  if (event.args) {
-    delete event.block;
-    logger.info(JSON.stringify(event.args)); 
-  }
+type TransferEventArgs = [string, string, BigNumber] & {
+  from: string;
+  to: string;
+  value: BigNumber;
 };
+
+export async function handleTransfer(
+  transaction: AvalancheTransaction<TransferEventArgs>
+): Promise<void> {
+  // event data
+  //logger.info("log" + JSON.stringify(event.args));
+
+  // ensure that our account entities exist
+  const fromAccount = await Account.get(transaction.args[0].toString());
+  if (!fromAccount) {
+    await new Account(transaction.args[0].toString()).save();
+  }
+
+  const toAccount = await Account.get(transaction.args[1].toString());
+  if (!toAccount) {
+    await new Account(transaction.args[1].toString()).save();
+  }
+
+  // Create the new transfer entity
+  const transfer = new Transfer(`${transaction.blockHash}-${transaction.hash}`);
+  transfer.blockNumber = BigInt(transaction.blockNumber);
+  transfer.fromId = transaction.args[0].toString();
+  transfer.toId = transaction.args[1].toString();
+  transfer.amount = transaction.args[2].toBigInt();
+  await transfer.save();
+
+  const httpData = await fetch("https://api.github.com/users/github");
+  logger.info(`httpData: ${JSON.stringify(httpData.body)}`);
+}

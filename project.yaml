@@ -16,16 +16,17 @@ schema:
   file: "./schema.graphql"
 
 network:
-  # endpoint: "https://avalanche.api.onfinality.io/public"
-  endpoint:  https://api.avax.network
-  # endpoint:  https://api.avax-test.network
   chainId: "mainnet"
   subnet: "C"
-  dictionary: https://api.subquery.network/sq/subquery/avalanche-dictionary
+  endpoint: "https://avalanche.api.onfinality.io?apikey=ecfc3532-e59f-41cc-9760-dc23ad89e238"
+  # endpoint: https://api.avax.network
+  # endpoint:  https://api.avax-test.network
+  # dictionary: https://api.subquery.network/sq/subquery/avalanche-dictionary
 
 dataSources:
   - kind: avalanche/Runtime
-    startBlock: 13325660
+    startBlock: 14625454 # Known event
+    # startBlock: 13325661 # Contract created
     options:
       # Must be a key of assets
       abi: BetaSimpleFlatLostWorld
@@ -37,7 +38,15 @@ dataSources:
       file: "./dist/index.js"
       handlers:
         - handler: handleTransfer
-          kind: avalanche/LogHandler
+          kind: avalanche/TransactionHandler
           filter:
-            topics:
-              - Transfer(address indexed from, address indexed to, uint256 indexed tokenId)
+            ## The function can either be the function fragment or signature
+            # function: '0x095ea7b3'
+            # function: '0x7ff36ab500000000000000000000000000000000000000000000000000000000'
+            function: transferFrom(address from, address to, uint256 tokenId)
+            # from: "0x60781C2586D68229fde47564546784ab3fACA982"
+            # to: "0x60781C2586D68229fde47564546784ab3fACA982"
+        - handler: handleTransfer
+          kind: avalanche/TransactionHandler
+          filter:
+            function: safeTransferFrom(address from, address to, uint256 tokenId)
