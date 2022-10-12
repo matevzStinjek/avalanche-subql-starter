@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { AvalancheTransaction } from "@subql/types-avalanche";
+import { AvalancheLog, AvalancheTransaction } from "@subql/types-avalanche";
 import { BigNumber } from "ethers";
 import { Account, Transfer } from "../types";
 
@@ -9,29 +9,28 @@ type TransferEventArgs = [string, string, BigNumber] & {
   value: BigNumber;
 };
 
-export async function handleTransfer(
-  transaction: AvalancheTransaction<TransferEventArgs>
+export async function handleLog(
+  logEvent: AvalancheLog<TransferEventArgs>
 ): Promise<void> {
-  // event data
-  //logger.info("log" + JSON.stringify(event.args));
+  // logger.info("log" + JSON.stringify(logEvent.args));
 
   // ensure that our account entities exist
-  const fromAccount = await Account.get(transaction.args[0].toString());
+  const fromAccount = await Account.get(logEvent.args[0].toString());
   if (!fromAccount) {
-    await new Account(transaction.args[0].toString()).save();
+    await new Account(logEvent.args[0].toString()).save();
   }
 
-  const toAccount = await Account.get(transaction.args[1].toString());
+  const toAccount = await Account.get(logEvent.args[1].toString());
   if (!toAccount) {
-    await new Account(transaction.args[1].toString()).save();
+    await new Account(logEvent.args[1].toString()).save();
   }
 
   // Create the new transfer entity
-  const transfer = new Transfer(`${transaction.blockHash}-${transaction.hash}`);
-  transfer.blockNumber = BigInt(transaction.blockNumber);
-  transfer.fromId = transaction.args[0].toString();
-  transfer.toId = transaction.args[1].toString();
-  transfer.amount = transaction.args[2].toBigInt();
+  const transfer = new Transfer(`${logEvent.blockHash}-${logEvent.logIndex}`);
+  transfer.blockNumber = BigInt(logEvent.blockNumber);
+  transfer.fromId = logEvent.args[0].toString();
+  transfer.toId = logEvent.args[1].toString();
+  transfer.amount = logEvent.args[2].toBigInt();
   await transfer.save();
 
   const httpData = await fetch("https://api.github.com/users/github");
